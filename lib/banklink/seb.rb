@@ -1,8 +1,7 @@
 module Banklink
   module Seb
-    # mattr_accessor :service_url
-    self.service_url
-      if SebLV.service_url.present?
+    def self.service_url
+      if SebLT.service_url.nil?
         return SebLV.service_url
       else
         return SebLT.service_url
