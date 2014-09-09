@@ -5,7 +5,7 @@ Payment system integration for Latvian banks what uses banklink API.
 == Changes in 1.1.0
 
 * Move Swedbank under Banklink::Swedbank (Please run tests and refacture)
-* Add SEB banklink support
+* Add SebLV banklink support
 
 == Changes in 1.0.0
 
@@ -41,11 +41,11 @@ Insert this in your config file:
   Banklink::Swedbank.bank_certificate = File.read("#{Rails.root}/path/to/bank_public_key")
   Banklink::Swedbank.production_url = "https://ib.swedbank.lv/banklink"
 
-==== SEB
+==== SebLV
 
-  Banklink::Seb.private_key = File.read("#{Rails.root}/path/to/your_private_key")
-  Banklink::Seb.bank_certificate = File.read("#{Rails.root}/path/to/bank_public_key")
-  Banklink::Seb.production_url = "https://ib.swedbank.lv/banklink"
+  Banklink::SebLV.private_key = File.read("#{Rails.root}/path/to/your_private_key")
+  Banklink::SebLV.bank_certificate = File.read("#{Rails.root}/path/to/bank_public_key")
+  Banklink::SebLV.production_url = "https://ib.swedbank.lv/banklink"
 
 Helper for view:
 
@@ -55,17 +55,17 @@ Helper for view:
     options[:return] = 'http://yourapp.com/'
     options[:reference] = '454'
     options[:message] = 'Testing banklink'
-    @helper = Banklink::Swedbank.helper(TRANS_ID, YOUR_SENDER_ID, options) # OR Banklink::Seb.helper(TRANS_ID, YOUR_SENDER_ID, options)
+    @helper = Banklink::Swedbank.helper(TRANS_ID, YOUR_SENDER_ID, options) # OR Banklink::SebLV.helper(TRANS_ID, YOUR_SENDER_ID, options)
 
 Then create Notification controller for notify. Then you can notify:
 
-    notify = Banklink::Swedbank.notification(request.raw_post) # OR Banklink::Seb.notification(request.raw_post)
+    notify = Banklink::Swedbank.notification(request.raw_post) # OR Banklink::SebLV.notification(request.raw_post)
     @text
     if notify.acknowledge
       if notify.complete?
         @text = "Thanks!"
       elsif notify.failed?
-        @text = "You didn't paid!"
+        @text = "You didn't pay!"
       else
         @text = "Wait or other status"
       end
@@ -84,4 +84,4 @@ You can run the tests from this gem with (inside the banklink directory):
 
 == Maintainer
 
-This gem is maintained by {Arturs Braucs @ Weby}[mailto:arturs@weby.lv]
+This gem is maintained by {Sacristan @ Creative}[mailto:girts@creo.mobi]

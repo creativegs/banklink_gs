@@ -2,11 +2,11 @@
 
 require File.dirname(__FILE__) + '/test_helper'
 
-class SebNotificationTest < Test::Unit::TestCase
+class SebLVNotificationTest < Test::Unit::TestCase
   include Banklink
 
   def setup
-    @seb = Banklink::Seb.notification(http_raw_data)
+    @seb = Banklink::SebLV.notification(http_raw_data)
   end
 
   # TODO: fix test
@@ -22,7 +22,7 @@ class SebNotificationTest < Test::Unit::TestCase
   end
 
   def test_acknowledgement_fail_with_params_changed
-    @seb = Banklink::Seb.notification(http_raw_data.gsub('VK_AMOUNT=33', 'VK_AMOUNT=100'))
+    @seb = Banklink::SebLV.notification(http_raw_data.gsub('VK_AMOUNT=33', 'VK_AMOUNT=100'))
     assert_equal false, @seb.acknowledge
   end
 
