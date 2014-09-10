@@ -18,14 +18,13 @@ module Banklink #:nodoc:
         @options['VK_REF']     = transaction
         @options['VK_MSG']     = options[:message]
         @options['VK_LANG']    = options[:lang] if options[:lang]
+        @options['VK_RETURN']  = options[:return]
 
         if options[:service_msg_number]
           @service_msg_number = options.delete(:service_msg_number)
         else
           @service_msg_number = default_service_msg_number
         end
-
-        puts ">>> #{@service_msg_number} <<<"
 
         add_required_params
         add_vk_crc

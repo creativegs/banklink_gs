@@ -15,7 +15,7 @@ class SebLTHelperTest < Test::Unit::TestCase
     options[:acc] = 'LT417044060001223597'
 
     helper = SebLT::Helper.new(300, '300', options)
-    assert_equal 12, helper.form_fields.size
+    assert_equal 13, helper.form_fields.size
   end
 
 end
