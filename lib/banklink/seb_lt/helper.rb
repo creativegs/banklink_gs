@@ -86,7 +86,7 @@ module Banklink #:nodoc:
       end
 
       def vk_version
-        '001'
+        '008'
       end
 
       def redirect_url
