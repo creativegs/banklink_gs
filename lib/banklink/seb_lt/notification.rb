@@ -49,7 +49,7 @@ module Banklink
         params['VK_SERVICE'] == '1101'
       end
 
-      def wait?
+      def waiting?
         params['VK_SERVICE'] == '1201'
       end
 
@@ -112,7 +112,7 @@ module Banklink
       def status
         if complete?
           return 'Completed'
-        elsif wait?
+        elsif waiting?
           return "Waiting"
         end
         
