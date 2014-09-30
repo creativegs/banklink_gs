@@ -41,7 +41,7 @@ module Banklink
         params['IB_STATUS'] == 'ACCOMPLISHED'
       end
 
-      def wait?
+      def waiting?
         params['IB_SERVICE'] == '1201'
       end
 
@@ -99,7 +99,13 @@ module Banklink
 
       # TODO what should be here?
       def status
-        complete? ? 'Completed' : 'Failed'
+        if complete?
+          return 'Completed'
+        elsif waiting?
+          return "Waiting"
+        end
+        
+        return 'Failed'
       end
 
       # If our request was sent automatically by the bank (true) or manually
