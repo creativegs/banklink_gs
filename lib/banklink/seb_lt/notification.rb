@@ -112,10 +112,11 @@ module Banklink
       def status
         if complete?
           return 'Completed'
-        wait?
+        elsif wait?
           return "Waiting"
-        failed?
-          return 'Failed'
+        end
+        
+        return 'Failed'
       end
 
       # If our request was sent automatically by the bank (true) or manually
