@@ -110,7 +110,12 @@ module Banklink
 
       # TODO what should be here?
       def status
-        complete? ? 'Completed' : 'Failed'
+        if complete?
+          return 'Completed'
+        wait?
+          "Waiting"
+        failed?
+          return 'Failed'
       end
 
       # If our request was sent automatically by the bank (true) or manually
