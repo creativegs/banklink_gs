@@ -113,7 +113,7 @@ module Banklink
         if complete?
           return 'Completed'
         wait?
-          "Waiting"
+          return "Waiting"
         failed?
           return 'Failed'
       end
