@@ -63,27 +63,27 @@ module Banklink
 
       # The order id we passed to the form helper.
       def item_id
-        params['VK_STAMP']
+        params['VK_STAMP'].force_encoding('UTF-8')
       end
 
       def transaction_id
-        params['VK_REF']
+        params['VK_REF'].force_encoding('UTF-8')
       end
 
       def sender_name
-        params['VK_SND_NAME']
+        params['VK_SND_NAME'].force_encoding('UTF-8')
       end
 
       def sender_bank_account
-        params['VK_SND_ACC']
+        params['VK_SND_ACC'].force_encoding('UTF-8')
       end
 
       def reciever_name
-        params['VK_REC_NAME']
+        params['VK_REC_NAME'].force_encoding('UTF-8')
       end
 
       def reciever_bank_account
-        params['VK_REC_ACC']
+        params['VK_REC_ACC'].force_encoding('UTF-8')
       end
 
       def received_at
