@@ -3,9 +3,9 @@ $:.push File.expand_path("../lib", __FILE__)
 require "banklink/version"
 
 Gem::Specification.new do |s|
-  s.name = "banklink_sac"
+  s.name = "banklink_gs"
   s.version = Banklink::VERSION
-  s.author = "Arturs Braucs, Girts Kesteris"
+  s.author = "Creative.gs"
   s.email = ["girts@creative.gs"]
   s.homepage = "https://github.com/Sacristan/banklink"
   s.platform = Gem::Platform::RUBY
