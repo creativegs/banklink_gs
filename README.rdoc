@@ -1,3 +1,0 @@
-This gem is maintained by {Sacristan @ Creative}[mailto:girts@creo.mobi]
-
-Heavily inspired from github.com/artursbraucs/banklink

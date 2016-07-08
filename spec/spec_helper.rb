@@ -1,3 +1,11 @@
+require 'simplecov'
+
+unless ENV['cov'] == 'ignore'
+  SimpleCov.start 'rails' do
+
+  end
+end
+
 require 'banklink'
 require 'test_data.rb'
 
@@ -9,5 +17,4 @@ RSpec.configure do |config|
   config.mock_with :rspec do |mocks|
     mocks.verify_partial_doubles = true
   end
-
 end
