@@ -1,5 +1,4 @@
-require 'spec_helper'
-
+# rspec spec/lib/banklink/seb_lv/helper_spec.rb
 RSpec.describe Banklink::SebLV::Helper do
   before :all do
     options = {}
@@ -14,6 +13,12 @@ RSpec.describe Banklink::SebLV::Helper do
 
   it "should have created 12 form fields" do
     expect(@helper.form_fields.size).to eq 11
+  end
+
+  describe "#redirect_url" do
+    it "should work without errors" do
+      expect{@helper.redirect_url}.to_not raise_error
+    end
   end
 
 end

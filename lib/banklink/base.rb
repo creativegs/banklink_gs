@@ -3,6 +3,3 @@ class Hash
     map{ |k, v| URI.escape("#{k}=#{v}") }.join("&")
   end
 end
-
-module Banklink
-end

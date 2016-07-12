@@ -1,7 +1,5 @@
-require 'spec_helper'
-
+# rspec spec/lib/banklink/swedbank/notification_spec.rb
 RSpec.describe Banklink::Swedbank::Notification do
-
   before :all do
     @notification = Banklink::Swedbank.notification(SWEDBANK_RAW_POST)
   end

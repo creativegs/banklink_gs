@@ -1,9 +1,7 @@
 require 'simplecov'
 
-unless ENV['cov'] == 'ignore'
-  SimpleCov.start 'rails' do
-
-  end
+SimpleCov.start do
+  add_filter '/spec/'
 end
 
 require 'banklink'
