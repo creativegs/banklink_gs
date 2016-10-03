@@ -20,25 +20,7 @@ All other paymodes use their respective legacy counterparts.
 
 The flow is:  
 
-1. Configure the gem, put this in some initializer.
-  ```rb
-    Banklink::Swedbank14.privkey =
-    Banklink::Swedbank14.bank_cert =
-
-    if platform_swisslanguages?
-        cert_domain = "swisslanguages"
-        @vk_snd_id = SWISSLANGUAGES_SWEDBANK_EE_VK_SND_ID
-      else
-        cert_domain = "stockholmhealth"
-        @vk_snd_id = STOCKHOLMHEALTH_SWEDBANK_EE_VK_SND_ID
-      end
-
-      Banklink::Swedbank.private_key = File.read("#{Rails.root}/secret/banklink/swedbank/#{cert_domain}/privkey_ee.pem")
-      Banklink::Swedbank.bank_certificate = File.read("#{Rails.root}/secret/banklink/swedbank/#{cert_domain}/cert_ee.pem")
-      Banklink::Swedbank.service_url = "https://www.swedbank.ee/banklink"
-  ```
-
-2. In controller, prepare the form helper object
+1. In controller, prepare the form helper object
   ```rb
     if some_condition
       merchant_id = "TRADER"      
@@ -51,14 +33,14 @@ The flow is:
 
     options = {
       merchant_id: merchant_id,
-      order_id: "1234567",
+      payment_id: "1234567",
       amount: "1.99",
       message: "Thanks for your purchase, your unique order number is 1234567",
       success_url: "https://domain.com/success/path",
       fail_url: "https://domain.com/fail/path",
     }
 
-    swed14_helper = Banklink::Swedbank14.helper(options)
+    swed14_helper = Banklink::Swedbank14::Helper.new(options)
   ```
 
 3. In respective template render a form that posts to Banklink endpoint

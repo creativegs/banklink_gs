@@ -30,10 +30,14 @@ module V14Mac
     end.join("")
   end
 
+  # takes the hasheable row and RSA-encodes it.
   def generate_v14_mac
-    privkey = get_private_key
-    signature = privkey.sign(OpenSSL::Digest::SHA1.new, generate_hasheable_row)
+    privkey = Banklink::Swedbank14.get_privkey
 
-    return Base64.encode64(signature).gsub(/\n/, '')
-  end  
+    raise ArgumentError.new("There's no :privkey set for #{self.class}") if privkey.blank?
+
+    signature = privkey.sign(OpenSSL::Digest::SHA1.new, generate_hasheable_row) # this is binary a-la "\W003.."
+
+    return Base64.encode64(signature).gsub(/\n/, '') # this is a single line, a-la "J1c1p...a8J="
+  end
 end

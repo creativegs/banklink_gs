@@ -3,7 +3,6 @@
 
 module Banklink
   module Swedbank14
-    include V14Mac
 
     # Raw X509 certificate of the bank, string format.
     mattr_accessor :bank_cert
@@ -17,10 +16,13 @@ module Banklink
     # Our RSA private key. OpenSSL container.
     def self.get_privkey
       private_key = self.privkey
+      raise ArgumentError.new("No :privkey loaded for #{self.name}") if private_key.blank?
       OpenSSL::PKey::RSA.new(private_key.gsub(/\s{2,}/, ''))
     end
 
     class Helper
+      include V14Mac
+
       # Expected options are:
       #   options = {
       #   merchant_id: "STOCK", # or "SWISSLAN"
@@ -60,7 +62,7 @@ module Banklink
         @fields["VK_REF"] = "#{Time.zone.now.to_i}#{options[:payment_id]}" # , 35, Payment order reference number
         @fields["VK_MSG"] = options[:message].to_s #, 95, Description of payment order
         @fields["VK_RETURN"] = options[:success_url]# , 255, URL where reply of successful transaction is sent
-        @fields["VK_CANCEL"] = options[:fail_url] # , 255, URL where reply of failed transaction is sent      
+        @fields["VK_CANCEL"] = options[:fail_url] # , 255, URL where reply of failed transaction is sent
         @fields["VK_DATETIME"] = Time.zone.now.strftime("%FT%T%z")  #=> "2016-10-03T20:11:18+0300" #  , 24, Date and time of the initiation of the query in DATETIME format (ISO)
 
         # "VK_MAC", 700, Control code / signature

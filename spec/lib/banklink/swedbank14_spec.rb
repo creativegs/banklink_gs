@@ -1,5 +1,24 @@
 # rspec spec/lib/banklink/swedbank14_spec.rb
 RSpec.describe Banklink::Swedbank14 do
+
+  describe ".get_bank_cert" do
+    xit "should return a string (public key)" do
+      expect(0).to eq 1
+    end
+  end
+
+  describe ".get_privkey" do
+    it "should return a privkey object (not a string)" do
+      Banklink::Swedbank14.privkey = swedbank_privkey
+      expect(Banklink::Swedbank14.get_privkey.class).to eq OpenSSL::PKey::RSA
+    end
+
+    it "should raise an argument error if no privkey string loaded" do
+      Banklink::Swedbank14.privkey = nil
+      expect{Banklink::Swedbank14.get_privkey}.to raise_error(ArgumentError, /^No :privkey loaded/)
+    end
+  end
+
   describe "Helper" do
     klass = Banklink::Swedbank14::Helper
     let(:valid_options) { valid_swed_14_options }

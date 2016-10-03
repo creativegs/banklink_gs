@@ -33,22 +33,7 @@ module Banklink
         str << func_p(val) << val
       end
       str
-    end
-
-    # == New ==
-    def generate_hasheable_row
-      return hasheable_fields.map do |key, value|
-        "#{func_p(value)}#{value}"
-      end.join("")
-    end
-
-    def generate_v14_mac
-      privkey = get_private_key
-      signature = privkey.sign(OpenSSL::Digest::SHA1.new, generate_hasheable_row)
-
-      return Base64.encode64(signature).gsub(/\n/, '')
-    end
-    # ==  ==
+    end  
 
     def generate_signature(service_msg_number, sigparams, required_service_params)
       privkey = self.class.parent.get_private_key
