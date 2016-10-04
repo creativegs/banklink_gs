@@ -60,7 +60,7 @@ module Banklink
         @fields["VK_STAMP"] = options[:order_id] #, 20, Query ID
         @fields["VK_AMOUNT"] = options[:amount]# , 12, Amount payable
         @fields["VK_CURR"] = "EUR" # , 3, Name of the currency: EUR
-        @fields["VK_REF"] = options[:payment_id] # , 35, Payment order reference number
+        @fields["VK_REF"] = get_valid_vk_ref(options[:payment_id].to_s) # , 35, Payment order reference number
         @fields["VK_MSG"] = options[:message].to_s #, 95, Description of payment order
         @fields["VK_RETURN"] = options[:success_url]# , 255, URL where reply of successful transaction is sent
         @fields["VK_CANCEL"] = options[:fail_url] # , 255, URL where reply of failed transaction is sent
@@ -76,6 +76,47 @@ module Banklink
 
       def service_url
         return "https://www.swedbank.ee/banklink"
+      end
+
+      def get_valid_vk_ref(payment_id)
+        payment_id_array = payment_id.split('').map(&:to_i)
+        seventhreeeone_array = [7,3,1]
+        seventhreeeone_array_index = 0
+
+        payment_id_size = payment_id_array.length
+        multiply_array = Array.new(payment_id_size)
+        multiply_array_index = multiply_array.length - 1
+
+        result = 0
+
+        # Gets multiplication array with 731
+        while multiply_array_index > -1
+          multiply_array[multiply_array_index] = seventhreeeone_array[seventhreeeone_array_index]
+          seventhreeeone_array_index += 1
+          if seventhreeeone_array_index > 2
+            seventhreeeone_array_index = 0
+          end
+          multiply_array_index -= 1
+        end
+
+        # Get endcoding sum
+        payment_id_array.each_with_index do |payment_id, index|
+           result += payment_id_array[index] * multiply_array[index]
+        end
+
+        # How near is it to next digit with 0
+        big_digit = 10
+        last_result_digit = result % 10
+
+        if last_result_digit == 0
+          big_digit = 0
+        else
+          big_digit -= last_result_digit
+        end
+
+        payment_id += big_digit.to_s
+
+        return payment_id
       end
 
       def hasheable_fields
@@ -187,7 +228,7 @@ module Banklink
         # require 'date'
         date = params['VK_T_DATETIME']
         return nil unless date
-        return date.to_datetime.to_date 
+        return date.to_datetime.to_date
       end
 
       def redirect?

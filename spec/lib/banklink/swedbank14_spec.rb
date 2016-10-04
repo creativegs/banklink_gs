@@ -48,7 +48,7 @@ RSpec.describe Banklink::Swedbank14 do
           "VK_STAMP" => "1234567890",
           "VK_AMOUNT" => "1.99",
           "VK_CURR" => "EUR",
-          "VK_REF" => "666999",
+          "VK_REF" => "6669995",
           "VK_MSG" => "Thanks!",
           "VK_RETURN" => "https://testtest.ee/banklinkreturn.php",
           "VK_CANCEL" => "https://testtest.ee/banklinkcancel.php",
