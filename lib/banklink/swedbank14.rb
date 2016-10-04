@@ -1,6 +1,3 @@
-#require 'banklink/swedbank14/helper'
-#require 'banklink/swedbank14/response'
-
 module Banklink
   module Swedbank14
 
@@ -187,7 +184,7 @@ module Banklink
         # require 'date'
         date = params['VK_T_DATETIME']
         return nil unless date
-        return date.to_datetime.to_date 
+        return date.to_datetime.to_date
       end
 
       def redirect?
