@@ -39,6 +39,12 @@ RSpec.describe Banklink::Swedbank14 do
       end
     end
 
+    describe "#get_valid_vk_ref(payment_id)" do
+      it "should return a 7-3-1 coded integer" do
+        expect(valid_helper.get_valid_vk_ref("666999")).to eq "6669995"
+      end
+    end
+
     describe "#form_fields" do
       it "should return a Hash with correct data" do
         exp = {
