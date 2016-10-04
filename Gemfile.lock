@@ -59,6 +59,3 @@ DEPENDENCIES
   rspec
   simplecov
   timecop
-
-BUNDLED WITH
-   1.12.5
