@@ -48,7 +48,7 @@ RSpec.describe Banklink::Swedbank14 do
           "VK_STAMP" => "1234567890",
           "VK_AMOUNT" => "1.99",
           "VK_CURR" => "EUR",
-          "VK_REF" => "14129223521234567890",
+          "VK_REF" => "666999",
           "VK_MSG" => "Thanks!",
           "VK_RETURN" => "https://testtest.ee/banklinkreturn.php",
           "VK_CANCEL" => "https://testtest.ee/banklinkcancel.php",
@@ -68,11 +68,74 @@ RSpec.describe Banklink::Swedbank14 do
   end
 
   describe "Response" do
-    xit "should " do
-      expect(0).to eq 1
+    let(:completed) { Banklink::Swedbank14::Response.new(swed_14_completed_response) }
+    let(:failed) { Banklink::Swedbank14::Response.new(swed_14_failed_response) }
+
+    describe "#initialize" do
+      it "should make a response object for a failed payment" do
+        expect(failed.class).to eq Banklink::Swedbank14::Response
+      end
+
+      it "should make a response object for a successful payment" do
+        expect(completed.class).to eq Banklink::Swedbank14::Response
+      end
+    end
+
+    describe "#complete?" do
+      it "should return true for a complete response" do
+        expect(completed.complete?).to eq true
+      end
+
+      it "should return false for a failed response" do
+        expect(failed.complete?).to eq false
+      end
+    end
+
+    describe "#status" do
+      it "should return 'Completed' for a complete response" do
+        expect(completed.status).to eq 'Completed'
+      end
+
+      it "should return 'Failed' for a fail response" do
+        expect(failed.status).to eq 'Failed'
+      end
+    end
+
+    describe "#item_id" do
+      it "should return the originating order id" do
+        expect(completed.item_id).to eq "1234567890"
+      end
+    end
+
+    describe "#transaction_id" do
+      it "should return the loggable and originating transaction id" do
+        expect(completed.transaction_id).to eq "666999"
+      end
+    end
+
+    describe "#params" do
+      it "should return the originating params hash" do
+        expect(completed.params).to eq swed_14_completed_response
+      end
+    end
+
+    describe "#received_at" do
+      it "should return a date string" do
+        expect(completed.received_at.to_s).to eq("2014-10-10")
+      end
+    end
+
+    describe "#redirect?" do
+      it "should return true if VK_AUTO if false" do
+        redirectable = Banklink::Swedbank14::Response.new(swed_14_completed_response.merge("VK_AUTO" => "N"))
+        expect(redirectable.redirect?).to eq true
+      end
+
+      it "should return false if VK_AUTO if true" do
+        no_redirect = Banklink::Swedbank14::Response.new(swed_14_completed_response.merge("VK_AUTO" => "Y"))
+        expect(no_redirect.redirect?).to eq false
+      end
     end
   end
-
-
 
 end

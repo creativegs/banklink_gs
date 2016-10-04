@@ -26,9 +26,10 @@ module Banklink
       # Expected options are:
       #   options = {
       #   merchant_id: "STOCK", # or "SWISSLAN"
-      #   payment_id: "1234567",
+      #   order_id: "1234567",
+      #   payment_id: "666999"
       #   amount: "1.99",
-      #   message: "Thenks for your purchase, your unique order number is 1234567",
+      #   message: "Thanks for your purchase, your unique order number is 1234567",
       #   success_url: "https://domain.com/success/path",
       #   fail_url: "https://domain.com/fail/path",
       # }
@@ -56,10 +57,10 @@ module Banklink
         @fields["VK_SERVICE"] = "1012"
         @fields["VK_VERSION"] = "008"
         @fields["VK_SND_ID"] = options[:merchant_id] # , 15, ID of the author of the query (Merchant’s ID)
-        @fields["VK_STAMP"] = options[:payment_id] #, 20, Query ID
+        @fields["VK_STAMP"] = options[:order_id] #, 20, Query ID
         @fields["VK_AMOUNT"] = options[:amount]# , 12, Amount payable
         @fields["VK_CURR"] = "EUR" # , 3, Name of the currency: EUR
-        @fields["VK_REF"] = "#{Time.zone.now.to_i}#{options[:payment_id]}" # , 35, Payment order reference number
+        @fields["VK_REF"] = options[:payment_id] # , 35, Payment order reference number
         @fields["VK_MSG"] = options[:message].to_s #, 95, Description of payment order
         @fields["VK_RETURN"] = options[:success_url]# , 255, URL where reply of successful transaction is sent
         @fields["VK_CANCEL"] = options[:fail_url] # , 255, URL where reply of failed transaction is sent
@@ -87,7 +88,7 @@ module Banklink
 
       private
         def ensure_needed_fields!
-          raise ArgumentError.new("At least one mandatory field is not filled! Make sure all of :merchant_id, :order_id, :message, :success_url and :fail_url are provided!") unless all_fields_filled?
+          raise ArgumentError.new("At least one mandatory field is not filled! Make sure all of :merchant_id, :order_id, :payment_id, :message, :success_url and :fail_url are provided!") unless all_fields_filled?
         end
 
         def all_fields_filled?
@@ -100,71 +101,55 @@ module Banklink
     end
 
     class Response
-      # include Banklink::Common
 
-      attr_accessor :params
-      attr_accessor :raw
+      def initialize(params={})
+        # VK_SERVICE,4,Service number (1111)
+        # VK_VERSION,3,Used encryption algorithm (008)
+        # VK_SND_ID,15,ID of the author of the query (Bank’s ID)
+        # VK_REC_ID,15,ID of the recipient of the query (Merchant’s ID)
+        # VK_STAMP,20,Query ID
 
-      # set this to an array in the subclass, to specify which IPs are allowed to send requests
-      attr_accessor :production_ips
+        # VK_T_NO,20,Payment order number ## only in :success
+        # VK_AMOUNT,12,Amount paid ## only in :success
+        # VK_CURR,3,Name of the currency: EUR ## only in :success
+        # VK_REC_ACC,34,Recipient’s account number ## only in :success
+        # VK_REC_NAME,70,Recipient’s name ## only in :success
+        # VK_SND_ACC,34,Remitter’s account number ## only in :success
+        # VK_SND_NAME,70,Remitter’s name ## only in :success
 
-      def initialize(post, options = {})
-        @options = options
-        empty!
-        parse(post)
-      end
+        # VK_REF,35,Payment order reference number
+        # VK_MSG,95,Description of payment order
+        # VK_T_DATETIME,24,Payment order date and time in DATETIME format ## only in :success
+        # -
+        # VK_MAC,700,Control code / signature
+        # VK_ENCODING,12,Message encoding. UTF-8 (by default), ISO-8859-1 or WINDOWS-1257
+        # VK_LANG,3,Preferable language of communication (EST, ENG or RUS)
+        # VK_AUTO,1,N=reply by moving the customer to the merchant’s page.
 
-      def gross_cents
-        (gross.to_f * 100.0).round
-      end
-
-      # This combines the gross and currency and returns a proper Money object.
-      # this requires the money library located at http://dist.leetsoft.com/api/money
-      def amount
-        return gross_cents
-      end
-
-      # reset the notification.
-      def empty!
-        @params  = Hash.new
-        @raw     = ""
-      end
-
-      # Check if the request comes from an official IP
-      def valid_sender?(ip)
-        return true if Rails.env == :test || production_ips.blank?
-        production_ips.include?(ip)
-      end
-
-          # A helper method to parse the raw post of the request & return
-      # the right Notification subclass based on the sender id.
-      #def self.get_notification(http_raw_data)
-      #  params = ActiveMerchant::Billing::Integrations::Notification.new(http_raw_data).params
-      #  Banklink.get_class(params)::Notification.new(http_raw_data)
-      #end
-
-      def get_data_string
-        generate_data_string(params['VK_SERVICE'], params, Swedbank.required_service_params)
+        @params = params
       end
 
       def bank_signature_valid?(bank_signature, service_msg_number, sigparams)
-        Swedbank.get_bank_public_key.verify(OpenSSL::Digest::SHA1.new, bank_signature, generate_data_string(service_msg_number, sigparams, Swedbank.required_service_params))
+        return true # TODO by AB, make actual verification!!!
+        # Swedbank.get_bank_public_key.verify(OpenSSL::Digest::SHA1.new, bank_signature, generate_data_string(service_msg_number, sigparams, Swedbank.required_service_params))
       end
 
       def complete?
-        params['VK_SERVICE'] == '1101'
-      end
-
-      def waiting?
-        params['VK_SERVICE'] == '1201'
+        params['VK_SERVICE'].to_s[/^11\d\d/].present?
       end
 
       def failed?
-        params['VK_SERVICE'] == '1901'
+        params['VK_SERVICE'].to_s[/19\d\d/].present?
       end
 
-      def currency
-        params['VK_CURR']
+      def status
+        stat = if complete?
+          'Completed'
+        else
+          'Failed'
+        end
+
+        return stat
       end
 
       # The order id we passed to the form helper.
@@ -174,6 +159,10 @@ module Banklink
 
       def transaction_id
         params['VK_REF']
+      end
+
+      def params
+        return @params
       end
 
       def sender_name
@@ -195,12 +184,17 @@ module Banklink
       # When was this payment received by the client.
       # We're expecting a dd.mm.yyyy format.
       def received_at
-        require 'date'
-        date = params['VK_T_DATE']
+        # require 'date'
+        date = params['VK_T_DATETIME']
         return nil unless date
-        day, month, year = *date.split('.').map(&:to_i)
-        Date.civil(year, month, day)
+        return date.to_datetime.to_date 
       end
+
+      def redirect?
+        return params["VK_AUTO"] == "N"
+      end
+
+      #== OLD ==
 
       def signature
         Base64.decode64(params['VK_MAC'])
@@ -216,42 +210,10 @@ module Banklink
         params['VK_REC_ID'] == 'testvpos'
       end
 
-      # TODO what should be here?
-      def status
-        if complete?
-          return 'Completed'
-        elsif waiting?
-          return "Waiting"
-        end
-
-        return 'Failed'
-      end
-
       # If our request was sent automatically by the bank (true) or manually
       # by the user triggering the callback by pressing a "return" button (false).
       def automatic?
         params['VK_AUTO'].upcase == 'Y'
-      end
-
-      def success?
-        acknowledge && complete?
-      end
-
-      # We don't actually acknowledge the notification by making another request ourself,
-      # instead, we check the notification by checking the signature that came with the notification.
-      # This method has to be called when handling the notification & deciding whether to process the order.
-      # Example:
-      #
-      #   def notify
-      #     notify = Notification.new(params)
-      #
-      #     if notify.acknowledge
-      #       ... process order ... if notify.complete?
-      #     else
-      #       ... log possible hacking attempt ...
-      #     end
-      def acknowledge
-        bank_signature_valid?(signature, params['VK_SERVICE'], params)
       end
 
     end

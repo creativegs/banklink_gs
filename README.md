@@ -33,7 +33,8 @@ The flow is:
 
     options = {
       merchant_id: merchant_id,
-      payment_id: "1234567",
+      order_id: "1234567", # goes in "VK_STAMP"
+      payment_id: "6699", # goes in "VK_REF"
       amount: "1.99",
       message: "Thanks for your purchase, your unique order number is 1234567",
       success_url: "https://domain.com/success/path",
@@ -43,7 +44,7 @@ The flow is:
     swed14_helper = Banklink::Swedbank14::Helper.new(options)
   ```
 
-3. In respective template render a form that posts to Banklink endpoint
+2. In respective template render a form that posts to Banklink endpoint
   ```html
     <html>
     <body>
@@ -55,6 +56,26 @@ The flow is:
       </form>
     </body>
     </html>
+  ```
+
+3. With correct communication *to* the bank in step 2, there can be 3 types of response *from* bank.  
+  a. GET about success, performed by bank server headlessly
+  b. POST about success, performed by user's browser
+  c. GET/POST about failure
+
+4. Either way, pass returned parameters to response builder in return actions:
+  ```rb
+    response = Banklink::Swedbank14::Response.new(params)
+
+    # this service object then exposes needed convenience fields & methods:
+    :complete?
+    :status
+    :item_id
+    :params
+    :sender_name
+    :sender_bank_account
+    :received_at  
+    :redirect?    
   ```
 
 
