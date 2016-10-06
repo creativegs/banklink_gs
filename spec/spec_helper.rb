@@ -63,7 +63,7 @@ def swed_14_completed_response
     "VK_SND_ACC" => "999988887777",
     "VK_SND_NAME" => "remitter",
 
-    "VK_REF" => "666999",
+    "VK_REF" => "6669995",
     "VK_MSG" => "test message",
     "VK_T_DATETIME" => "2014-10-10T09:25:52+0300",
 
@@ -82,7 +82,7 @@ def swed_14_failed_response
     "VK_REC_ID" => "TRADER",
     "VK_STAMP" => "1234567890",
 
-    "VK_REF" => "666999",
+    "VK_REF" => "6669995",
     "VK_MSG" => "test message",
 
     "VK_MAC" => "TODO",

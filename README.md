@@ -70,6 +70,18 @@ The flow is:
 
 4. Either way, pass returned parameters to response builder in return actions:
   ```rb
+  # example params = {
+  #   "VK_SERVICE"=>"1111", "VK_VERSION"=>"008", "VK_SND_ID"=>"HP",
+  #   "VK_REC_ID"=>"STOCK", "VK_STAMP"=>"1845721", "VK_T_NO"=>"379",
+  #   "VK_AMOUNT"=>"0.05", "VK_CURR"=>"EUR",
+  #   "VK_REC_ACC"=>"EE132200221064230307",
+  #   "VK_REC_NAME"=>"CONTENT DISTRIBUTION SIA", "VK_SND_ACC"=>"EE812200001105126040",
+  #   "VK_SND_NAME"=>"KRISTJAN MÄNNIK", "VK_REF"=>"6753908", "VK_MSG"=>"StockholmHealth.com 675390 - Helpdesk 0037120023472 or diet@stockholmhealth.com",
+  #   "VK_T_DATETIME"=>"2016-10-05T11:55:43+0300",
+  #   "VK_LANG"=>"EST", "VK_AUTO"=>"Y", "VK_MAC"=>"SqqTe/qDU/XnyL3FFEuhx7WZ36HOTmnUF4Px+bJUFW+Or6UHvEAPU/Y7rPanh67qjE+R3VJEpTg6MhyxGhz4+aqRonG1O6Qs7+kQbRp8xkervVJXGyHnzEqyMthPLKNtSQt7ojbm7Rybm8OsLaQm5hMl9xo8bEWZrTkyMGGmEJ4=",
+  #   "VK_ENCODING"=>"UTF-8"
+  # }
+
   response = Banklink::Swedbank14::Response.new(params)
 
   # this service object then exposes needed convenience fields & methods:

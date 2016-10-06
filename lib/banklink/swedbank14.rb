@@ -196,7 +196,7 @@ module Banklink
       end
 
       def transaction_id
-        params['VK_REF']
+        params['VK_REF'][0..-2] # return all but the last digit
       end
 
       def params

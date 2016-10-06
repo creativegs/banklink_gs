@@ -108,7 +108,7 @@ RSpec.describe Banklink::Swedbank14 do
     end
 
     describe "#item_id" do
-      it "should return the originating order id" do
+      it "should return the 'VK_REF' field contents sans the last control digit (producing app-side transaction_id)" do
         expect(completed.item_id).to eq "1234567890"
       end
     end
