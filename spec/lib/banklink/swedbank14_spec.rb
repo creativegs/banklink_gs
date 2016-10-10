@@ -156,6 +156,12 @@ RSpec.describe Banklink::Swedbank14 do
       end
     end
 
+    describe "#merchant_id" do
+      it "should return the merchant identification string" do
+        expect(valid.merchant_id).to eq "STOCK"
+      end
+    end
+
     describe "#received_at" do
       it "should return a date string" do
         expect(completed.received_at.to_s).to eq("2014-10-10")
