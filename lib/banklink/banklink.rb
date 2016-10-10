@@ -1,6 +1,4 @@
 module Banklink
-
-
   # Calculation using method VK_VERSION=008:
   # VK_MAC is RSA signature of the request fields coded into BASE64.
   # VK_MAC will be calculated using secret key of the sender using RSA. Signature will
@@ -18,15 +16,15 @@ module Banklink
     extend ActiveSupport::Concern
     # p(x) is length of the field x represented by three digits
     def func_p(val)
-      sprintf("%03i", val.length)
+      sprintf("%03i", val.to_s.length)
     end
 
     # Generate a string to be signed out of service message parameters.
     # p(x1 )|| x1|| p(x2 )|| x2 || ... ||p( xn )||xn
     # || is string concatenation mark
     # p(x) is length of the field x represented by three digits
-    # Parameters val1, val2, value3 would be turned into:
-    # '003val1003val2006value3'
+    # Parameters val, val2, value3 would be turned into:
+    # '003val004val2006value3'
     def generate_data_string(service_msg_number, sigparams, required_service_params)
       str = ''
       required_params = required_service_params[Integer(service_msg_number)] || required_service_params[service_msg_number]
@@ -35,7 +33,7 @@ module Banklink
         str << func_p(val) << val
       end
       str
-    end
+    end  
 
     def generate_signature(service_msg_number, sigparams, required_service_params)
       privkey = self.class.parent.get_private_key
