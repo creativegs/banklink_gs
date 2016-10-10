@@ -24,19 +24,20 @@ module V14Mac
   # p(x) is length of the field x represented by three digits
   # Parameters val, val2, value3 would be turned into:
   # '003val004val2006value3'
-  def generate_hasheable_row
-    return hasheable_fields.map do |key, value|
+  # hasheable_fields = {"VK_SERVICE" => "1111", ...}
+  def generate_hasheable_row(fields)
+    return fields.map do |key, value|
       "#{func_p(value)}#{value}"
     end.join("")
   end
 
   # takes the hasheable row and RSA-encodes it.
-  def generate_v14_mac
+  def generate_v14_mac(fields)
     privkey = Banklink::Swedbank14.get_privkey
 
     raise ArgumentError.new("There's no :privkey set for #{self.class}") if privkey.blank?
 
-    signature = privkey.sign(OpenSSL::Digest::SHA1.new, generate_hasheable_row) # this is binary a-la "\W003.."
+    signature = privkey.sign(OpenSSL::Digest::SHA1.new, generate_hasheable_row(fields)) # this is binary a-la "\W003.."
 
     return Base64.encode64(signature).gsub(/\n/, '') # this is a single line, a-la "J1c1p...a8J="
   end

@@ -2,10 +2,7 @@ require 'banklink/version'
 
 require "base64"
 require 'active_support/all'
-#require "active_support/dependencies"
 require "active_support/concern"
-# require 'active_support'
-# require 'active_support/core_ext'
 
 require 'net/http'
 require 'net/https'
@@ -25,3 +22,7 @@ require 'banklink/swedbank14'
 require 'banklink/seb_lv'
 require 'banklink/seb_lt'
 require 'banklink/seb'
+
+module Banklink
+  self::ROOT = File.expand_path("..", File.dirname(__FILE__)).freeze
+end

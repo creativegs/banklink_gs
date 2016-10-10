@@ -6,6 +6,7 @@ module Banklink
     # RSA public key of the bank, taken from the X509 certificate of the bank. OpenSSL container.
     def self.get_bank_cert
       cert = self.bank_cert
+      raise ArgumentError.new("No :bank_cert loaded for #{self.name}") if cert.blank?
       OpenSSL::X509::Certificate.new(cert.gsub(/\s{2,}/, '')).public_key
     end
 
@@ -134,11 +135,12 @@ module Banklink
         end
 
         def mac_hash
-          return {"VK_MAC" => generate_v14_mac}
+          return {"VK_MAC" => generate_v14_mac(hasheable_fields)}
         end
     end
 
     class Response
+      include V14Mac
 
       def initialize(params={})
         # VK_SERVICE,4,Service number (1111)
@@ -167,9 +169,20 @@ module Banklink
         @params = params
       end
 
-      def bank_signature_valid?(bank_signature, service_msg_number, sigparams)
-        return true # TODO by AB, make actual verification!!!
-        # Swedbank.get_bank_public_key.verify(OpenSSL::Digest::SHA1.new, bank_signature, generate_data_string(service_msg_number, sigparams, Swedbank.required_service_params))
+      def hasheable_fields
+        return params.slice("VK_SERVICE", "VK_VERSION", "VK_SND_ID", "VK_REC_ID", "VK_STAMP", "VK_T_NO", "VK_AMOUNT", "VK_CURR", "VK_REC_ACC", "VK_REC_NAME", "VK_SND_ACC", "VK_SND_NAME", "VK_REF", "VK_MSG", "VK_T_DATETIME")
+      end
+
+      def bank_signable_row
+        return generate_hasheable_row(hasheable_fields)
+      end
+
+      def bank_signature_valid?
+        return true if failed? # quickreturn true, no need to verify a failed response
+
+        bank_cert = Banklink::Swedbank14.get_bank_cert
+
+        return bank_cert.verify(OpenSSL::Digest::SHA1.new, signature, bank_signable_row)
       end
 
       def complete?
@@ -224,15 +237,13 @@ module Banklink
       def received_at
         # require 'date'
         date = params['VK_T_DATETIME']
-        return nil unless date
+        return nil if date.blank?
         return date.to_datetime.to_date
       end
 
       def redirect?
-        return params["VK_AUTO"] == "N"
+        return params["VK_AUTO"].to_s[/\AN\z/].present?
       end
-
-      #== OLD ==
 
       def signature
         Base64.decode64(params['VK_MAC'])
@@ -243,15 +254,10 @@ module Banklink
         params['VK_AMOUNT']
       end
 
-      # Was this a test transaction?
-      def test?
-        params['VK_REC_ID'] == 'testvpos'
-      end
-
       # If our request was sent automatically by the bank (true) or manually
       # by the user triggering the callback by pressing a "return" button (false).
       def automatic?
-        params['VK_AUTO'].upcase == 'Y'
+        return !redirect?
       end
 
     end

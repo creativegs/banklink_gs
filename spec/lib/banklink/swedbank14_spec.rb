@@ -76,6 +76,8 @@ RSpec.describe Banklink::Swedbank14 do
   describe "Response" do
     let(:completed) { Banklink::Swedbank14::Response.new(swed_14_completed_response) }
     let(:failed) { Banklink::Swedbank14::Response.new(swed_14_failed_response) }
+    let(:valid) { Banklink::Swedbank14::Response.new(swed_14_valid_response) }
+    let(:invalid) { Banklink::Swedbank14::Response.new(swed_14_invalid_response) }
 
     describe "#initialize" do
       it "should make a response object for a failed payment" do
@@ -84,6 +86,35 @@ RSpec.describe Banklink::Swedbank14 do
 
       it "should make a response object for a successful payment" do
         expect(completed.class).to eq Banklink::Swedbank14::Response
+      end
+    end
+
+    describe "#hasheable_fields" do
+      it "should return a hash with 15 keys" do
+        expect(valid.hasheable_fields.keys.size).to eq 15
+      end
+    end
+
+    describe "#bank_signable_row" do
+      it "should return a specific string" do
+        expect(valid.bank_signable_row).to eq valid_response_signable_row
+      end
+    end
+
+    describe "#bank_signature_valid?" do
+      it "should quickreturn true for a failed response without actual processing" do
+        expect(failed.bank_signature_valid?).to eq true
+      end
+
+      it "should return true for a valid response with untampered MAC" do
+        Banklink::Swedbank14.bank_cert = swed_bank_cert
+        valid = Banklink::Swedbank14::Response.new(swed_14_valid_response)
+        expect(valid.bank_signature_valid?).to eq true
+      end
+
+      it "should return false for a valid response with MAC that has been tampered with" do
+        invalid = Banklink::Swedbank14::Response.new(swed_14_invalid_response)
+        expect(invalid.bank_signature_valid?).to eq false
       end
     end
 
@@ -142,6 +173,21 @@ RSpec.describe Banklink::Swedbank14 do
         expect(no_redirect.redirect?).to eq false
       end
     end
+
+    describe "#signature" do
+      it "should return a base64 encoded string" do
+        expect(valid.signature.size).to eq 128
+      end
+    end
+
+    describe "#automatic?" do
+      it "should return true if VK_AUTO was Y" do
+        no_redirect = Banklink::Swedbank14::Response.new(swed_14_completed_response.merge("VK_AUTO" => "Y"))
+        expect(no_redirect.automatic?).to eq true
+      end
+    end
+
+
   end
 
 end
