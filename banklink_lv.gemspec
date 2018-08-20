@@ -3,7 +3,7 @@ $:.push File.expand_path("../lib", __FILE__)
 require "banklink/version"
 
 Gem::Specification.new do |s|
-  s.required_ruby_version = ">= 2.0.0"
+  s.required_ruby_version = ">= 2.1.10"
   s.name = "banklink_gs"
   s.version = Banklink::VERSION
   s.author = "Creative.gs"
