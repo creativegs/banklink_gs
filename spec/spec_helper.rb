@@ -32,6 +32,7 @@ def valid_swed_14_options
     message: "Thanks!",
     success_url: "https://testtest.ee/banklinkreturn.php",
     fail_url: "https://testtest.ee/banklinkcancel.php",
+    lang: "EST"
   }
 end
 
