@@ -67,7 +67,7 @@ module Banklink
         # "VK_MAC", 700, Control code / signature
         @settings = {}
         @settings["VK_ENCODING"] = "UTF-8" #, 12 Message encoding. UTF-8 (by default), ISO-8859-1 or WINDOWS-1257
-        @settings["VK_LANG"] = options[:lang] #, 3, Preferable language of communication (EST, ENG or RUS)
+        @settings["VK_LANG"] = options[:lang].presence || "EST" #, 3, Preferable language of communication (EST, ENG or RUS)
 
         ensure_needed_fields!
       end
