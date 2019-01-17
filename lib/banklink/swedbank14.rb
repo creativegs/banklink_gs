@@ -217,13 +217,8 @@ module Banklink
       end
 
       def merchant_id
-        return params["VK_REC_ID"]
+        params["VK_REC_ID"]
       end
-
-      def lang
-        return params["VK_LANG"]
-      end
-
 
       def sender_name
         params['VK_SND_NAME']
