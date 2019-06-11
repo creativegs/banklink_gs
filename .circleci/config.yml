@@ -12,17 +12,17 @@ jobs:
     steps:
       - checkout
 
-      - run: gem install bundler -v 1.16.2 --no-doc
+      - run: gem install bundler -v 1.17.3 --no-doc
 
       - restore_cache:
-          key: v2-{{ checksum "Gemfile.lock" }}
+          key: bundle-{{ arch }}-{{ checksum "Gemfile" }}
 
       - run: bundle install --path ~/vendor/bundle
 
       #== save caches ==
 
       - save_cache:
-          key: v2-{{ checksum "Gemfile.lock" }}
+          key: bundle-{{ arch }}-{{ checksum "Gemfile" }}
           paths:
             - ~/vendor/bundle
 
