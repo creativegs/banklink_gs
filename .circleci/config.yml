@@ -2,16 +2,15 @@ version: 2
 
 defaults: &defaults
   working_directory: ~/banklink
-  environment:
-    TZ: "/usr/share/zoneinfo/Europe/Riga"
   docker:
     - image: circleci/ruby:2.3.8-node-browsers
       environment:
         TZ: "/usr/share/zoneinfo/Europe/Riga"
         RAILS_ENV: test
         COV: "false"
+
 jobs:
-  bundle_test:
+  bundle_install:
     <<: *defaults
     steps:
       - checkout
@@ -54,7 +53,7 @@ workflows:
   version: 2
   build:
     jobs:
-      - bundle_test
+      - bundle_install
       - test:
           requires:
-            - bundle_test
+            - bundle_install
