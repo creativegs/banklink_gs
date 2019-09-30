@@ -26,7 +26,7 @@ module V14Mac
   # '003val004val2006value3'
   # hasheable_fields = {"VK_SERVICE" => "1111", ...}
   def generate_hasheable_row(fields)
-    return fields.map do |key, value|
+    return fields.to_unsafe_h.map do |key, value|
       "#{func_p(value)}#{value}"
     end.join("")
   end
