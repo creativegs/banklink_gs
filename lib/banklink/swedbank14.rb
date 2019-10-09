@@ -170,11 +170,11 @@ module Banklink
       end
 
       def hasheable_fields
-        return params.slice("VK_SERVICE", "VK_VERSION", "VK_SND_ID", "VK_REC_ID", "VK_STAMP", "VK_T_NO", "VK_AMOUNT", "VK_CURR", "VK_REC_ACC", "VK_REC_NAME", "VK_SND_ACC", "VK_SND_NAME", "VK_REF", "VK_MSG", "VK_T_DATETIME")
+        params.slice("VK_SERVICE", "VK_VERSION", "VK_SND_ID", "VK_REC_ID", "VK_STAMP", "VK_T_NO", "VK_AMOUNT", "VK_CURR", "VK_REC_ACC", "VK_REC_NAME", "VK_SND_ACC", "VK_SND_NAME", "VK_REF", "VK_MSG", "VK_T_DATETIME").to_h
       end
 
       def bank_signable_row
-        return generate_hasheable_row(hasheable_fields)
+        generate_hasheable_row(hasheable_fields)
       end
 
       def bank_signature_valid?
