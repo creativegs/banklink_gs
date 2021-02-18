@@ -16,7 +16,7 @@ gem 'banklink_gs', git: 'git@github.com:CreativeGS/banklink_gs.git', branch: 'ma
 
 # Usage
 ## General helper->response pattern
-Coming soon.
+Coming soon..
 
 ## Swedbank EE version 1.4
 NB, as of 2016-10-03, EE Swedbank uses the 1.4 Banklink spec via `Swedbank14` module.  
