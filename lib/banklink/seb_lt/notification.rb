@@ -71,7 +71,7 @@ module Banklink
       end
 
       def sender_name
-        params['VK_SND_NAME']
+        params['VK_SND_NAME'].force_encoding('UTF-8')
       end
 
       def sender_bank_account
